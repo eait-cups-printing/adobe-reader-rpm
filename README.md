@@ -25,13 +25,13 @@ original RPM:
 - Missing `libidn.so.11` and `libpangox-1.0.so.0` are bundled in the new RPM
 and located in `/opt/Adobe/Reader9/Reader/intellinux/lib/`.
   + The missing `libidn.so.11` is extracted from a CentOS 8 **libidn** i686
-  RPM (`libidn-1.34-5.el8.i686.rpm`).
+  RPM (`libidn-1.34-5.el8.i686.rpm`). Although `libidn.so.11` is not
+  strictly required to have been included in the new AdobeReader RPM for
+  RHEL 8, the new RPM is compatible with both RHEL 8 and 9.
   + The missing `libpangox-1.0.so.0` is extracted from a Fedora 31
   **pangox-compat** i686 RPM (`pangox-compat-0.0.2-15.fc31.i686.rpm`).
   **pangox-compat** RPM is used since **pango** RPM hasn't provided the
-  obsolete libpangox library since Fedora 17. (Although `libidn.so.11` is not
-  strictly required to be included in the new AdobeReader RPM for RHEL 8,
-  the new RPM will be compatible with both RHEL 8 and 9 when it is.)
+  obsolete libpangox library since Fedora 17.
 - _Recommends_ dependencies added for packages that suppress Gtk-Message
 runtime warnings. (Note: any _Recommends_ dependency which can no longer be
 satisfied on a newer Fedora or RHEL release because the i686 package no
