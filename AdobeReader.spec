@@ -27,13 +27,15 @@ Source2: libpangox-1.0.so.0.0.0
 # Use rpmbuild --target i686 to satisfy the exclusive architecture
 ExclusiveArch: %ix86
 
+BuildRequires: execstack
+
 Requires: coreutils
 
 # 'Unable to locate theme engine in module_path: "adwaita"' acroread runtime
 # Gtk-Message warning is suppressed with adwaita-gtk2-theme.i686
 Recommends: adwaita-gtk2-theme(x86-32)
 
-# 'Failed to load module "canberra-gtk-module"'acroread runtime Gtk-Message
+# 'Failed to load module "canberra-gtk-module"' acroread runtime Gtk-Message
 # warning is suppressed with libcanberra-gtk2.i686
 Recommends: libcanberra-gtk2(x86-32)
 
@@ -93,6 +95,11 @@ sed -i 's/_filedir/_acroread_filedir/' opt/Adobe/Reader9/Resource/Shell/acroread
 
 # bash-completion does not require acroread_tab file to be executable
 chmod a-x opt/Adobe/Reader9/Resource/Shell/acroread_tab
+
+# Executable stack memory is a potential security problem, clear execstack
+# flag from library files that have it set
+execstack -c opt/Adobe/Reader9/Reader/intellinux/lib/libcrypto.so.0.9.8
+execstack -c opt/Adobe/Reader9/Reader/intellinux/lib/libsccore.so
 
 # Remove Netscape NPAPI based PDF plug-in as not supported by modern web-browsers
 rm -rf opt/Adobe/Reader9/Browser

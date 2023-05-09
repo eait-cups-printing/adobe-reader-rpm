@@ -48,6 +48,14 @@ modern web-browser.
 file which is dynamically loaded on demand by **bash-completion**.
 - Renames `_filedir` function to `_acroread_filedir` in the `acroread_tab`
 file to avoid potential name clash issues.
+- Although "SELinux is preventing
+`/opt/Adobe/Reader9/Reader/intellinux/bin/acroread` from making the program
+stack executable" SELinux error no longer occurs since **selinux-policy-3.9.7-13.fc14**
+and [Fedora Bugzilla# 630217](https://bugzilla.redhat.com/show_bug.cgi?id=630217),
+there is no reason `acroread` should be attempting to make its stack executable
+which is a potential security issue. For that reason, the execstack flag is cleared from
+bundled `libcrypto.so.0.9.8` and `libsccore.so` library files which are the only
+bundled files that have the execstack flag set.
 - Instead of using `xdg-desktop-icon`, `xdg-desktop-menu`, `xdg-icon-resource`
 and `xdg-mime`to install icons, .desktop and mime files in the RPM post install
 scriplet, use symlinks to the original files.
@@ -61,7 +69,7 @@ file for more details.
 
 Install prerequisite packages with:
 ```
-sudo dnf install rpmdevtools git
+sudo dnf install rpmdevtools git execstack
 ```
 
 ## Create directories for RPM building under your home directory
