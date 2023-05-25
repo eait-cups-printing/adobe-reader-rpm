@@ -93,7 +93,7 @@ rpmbuild/
 ## Fetch files, extract library files and copy to rpmbuild sub-directories
 
 ```
-git checkout https://github.com/eait-cups-printing/adobe-reader-rpm.git
+git clone https://github.com/eait-cups-printing/adobe-reader-rpm.git
 cd adobe-reader-rpm/
 cp -p AdobeReader.spec ~/rpmbuild/SPECS/
 
