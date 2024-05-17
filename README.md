@@ -18,8 +18,8 @@ Error:
 
 ## Bug fixes and enhancements
 The new AdobeReader binary RPM that is generated from the instructions in
-the next sections has a number of fixes and enhancements compared to the
-original RPM:
+the following sections has a number of fixes and enhancements compared to
+the original RPM:
 - Missing `/bin/basename` requires dependency has been replaced with
 **coreutils**.
 - Missing `libidn.so.11` and `libpangox-1.0.so.0` are bundled in the new RPM
@@ -27,43 +27,56 @@ and located in `/opt/Adobe/Reader9/Reader/intellinux/lib/`.
   + The missing `libidn.so.11` is extracted from a CentOS 8 **libidn** i686
   RPM (`libidn-1.34-5.el8.i686.rpm`). Although `libidn.so.11` is not
   strictly required to have been included in the new AdobeReader RPM for
-  RHEL 8, the new RPM will be compatible with both RHEL 8 and 9.
+  RHEL 8, the new RPM will also be compatible with both RHEL 9 and Fedora.
   + The missing `libpangox-1.0.so.0` is extracted from a Fedora 31
   **pangox-compat** i686 RPM (`pangox-compat-0.0.2-15.fc31.i686.rpm`).
-  **pangox-compat** RPM is used because main **pango** RPM hasn't provided
+  **pangox-compat** RPM is used because the main **pango** RPM hasn't provided
   the obsolete libpangox library since Fedora 17.
 - _Recommends_ dependencies added for packages that suppress Gtk-Message
 runtime warnings. (Note: any _Recommends_ dependency which can no longer be
 satisfied on a newer Fedora or RHEL release because the i686 package no
 longer exists is automatically ignored, so unfortunately may have to live
 with some runtime warnings)
-- Filters out the auto-requires and auto-provides for libraries installed to 
-`/opt/Adobe/Reader9/Reader/intellinux/lib/` as the libraries are specific to
-the AdobeReader RPM and should not be used to satisfy the dependencies of any
-other RPM.
+- Filtered automatically generated requires and provides for bundled library
+files so that only requires dependencies for external libraries are kept.
+`/opt/Adobe/Reader9/Reader/intellinux/lib/` where the bundled library
+files are installed is exclusive to the AdobeReader RPM, so should not be
+used to satisfy the dependencies of any other RPM.
 - Removed Netscape NPAPI based PDF plug-in as it is not supported by any
 modern web-browser.
-- Instead of using the legacy `/etc/bash_completion.d` directory, uses
-`/usr/share/bash-completion/completions/acroread` symlink to the `acroread_tab`
-file which is dynamically loaded on demand by **bash-completion**.
+- Use `/usr/share/bash-completion/completions/` directory instead of legacy
+`/etc/bash_completion.d/` for the symlink to the `acroread_tab` file.
 - Renames `_filedir` function to `_acroread_filedir` in the `acroread_tab`
 file to avoid potential name clash issues.
-- Although "SELinux is preventing
-`/opt/Adobe/Reader9/Reader/intellinux/bin/acroread` from making the program
-stack executable" SELinux error no longer occurs since **selinux-policy-3.9.7-13.fc14**
-and [Fedora Bugzilla# 630217](https://bugzilla.redhat.com/show_bug.cgi?id=630217),
-there is no reason `acroread` should be attempting to make its stack executable
-which is a potential security issue. For that reason, the execstack flag is cleared from
-bundled `libcrypto.so.0.9.8` and `libsccore.so` library files which are the only
-bundled files that have the execstack flag set.
-- Instead of using `xdg-desktop-icon`, `xdg-desktop-menu`, `xdg-icon-resource`
-and `xdg-mime`to install icons, .desktop and mime files in the RPM post install
-scriplet, use symlinks to the original files.
+- Clear the execstack flag from the `libcrypto.so.0.9.8` and `libsccore.so`
+bundled library files rather than rely on an old execstack exception SElinux
+policy for `acroread`.
+[Fedora Bugzilla# 630217](https://bugzilla.redhat.com/show_bug.cgi?id=630217),
+SElinux error report states there is no reason `acroread` should be attempting
+to make its stack executable as it is a potential security issue. The
+suggestion from that bug report is used to clear the execstack flag from the
+bundled library files that have it set.
+- The original RPM in its %post scriptlet uses `xdg-desktop-icon`,
+`xdg-desktop-menu`, `xdg-icon-resource` and `xdg-mime`to install the
+following files :
+  + `/root/Desktop/AdobeReader.desktop`
+  + `/usr/local/share/applications/AdobeReader.desktop`
+  + `/usr/local/share/applications/mimeinfo.cache`
+  + `/usr/local/share/applications/defaults.list`
+  + `/usr/share/icons/hicolor/*x*/apps/*.png`
+  + `/usr/share/icons/hicolor/*x*/mimetype/application-*.png`
+  + `/usr/share/mime/packages/AdobeReader.xml`
+
+  The above files are not "owned" by the original RPM, e.g. `rpm -ql AdobeReader_enu`
+does not list any of those files.
+
+  Instead, the new RPM creates symlinks that are "owned" by the new RPM using the
+%ghost directive and nothing is installed under either `/root/Desktop/` or
+`/usr/local/share/applications/` directories.
 - Has option to not include problematic Internet Access Plug-in (EFS.api)
 in the RPM that is built. See top of
 [AdobeReader.spec](https://github.com/eait-cups-printing/adobe-reader-rpm/blob/main/AdobeReader.spec)
 file for more details.
-
 
 ## Prerequisites
 
@@ -137,7 +150,7 @@ sudo dnf config-manager --set-enabled crb
 sudo dnf config-manager --enable codeready-builder-for-rhel-9-x86_64-rpms
 ```
 
-#### CentOS 8 Stream, Alma Linux 9, Rocky Linux 9
+#### CentOS 8 Stream, Alma Linux 8, Rocky Linux 8
 ```
 sudo dnf config-manager --set-enabled powertools
 ```
@@ -147,9 +160,26 @@ sudo dnf config-manager --set-enabled powertools
 sudo dnf config-manager --enable codeready-builder-for-rhel-8-x86_64-rpms
 ```
 
-# cups-filters 1.x pdf2ps filter
+# cups-filters pdf2ps filter
 [cups-filters 1.x](https://github.com/OpenPrinting/cups-filters/tree/1.x)
-includes a `pdf2ps` filter that can be configured to use Adobe Reader to
-convert PDF to PostScript. Adobe Reader seems to have fewer problems ingesting
-PDFs sent to the print server and the generated PostScript has few problems
-with PostScript interpreters on printers.
+includes a `pdf2ps` filter that can be configured at build time to use
+Adobe Reader to convert PDF to PostScript with the `--with-pdftops=acroread`
+configure switch.
+
+Similarily with cups-filters 2.x, [libppd)[https://github.com/OpenPrinting/libppd]
+can be configured with the `--with-pdftops=acroread` configure switch.
+
+Alternatively, the following can be done on a per printer basis to use acroread
+for the PDF to PostScript conversion:
+```
+lpadmin -p printer -o pdftops-renderer-default=acroread
+```
+
+and the following to remove it:
+```
+lpadmin -p printer -R pdftops-renderer-default
+```
+
+Adobe Reader seems to have fewer problems ingesting PDFs sent to the
+print server and the generated PostScript has few problems with clone
+PostScript interpreters on printers.
