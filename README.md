@@ -166,7 +166,7 @@ includes a `pdf2ps` filter that can be configured at build time to use
 Adobe Reader to convert PDF to PostScript with the `--with-pdftops=acroread`
 configure switch.
 
-Similarily with cups-filters 2.x, [libppd)[https://github.com/OpenPrinting/libppd]
+Similarily with cups-filters 2.x, [libppd](https://github.com/OpenPrinting/libppd)
 can be configured with the `--with-pdftops=acroread` configure switch.
 
 Alternatively, the following can be done on a per printer basis to use acroread
@@ -175,7 +175,7 @@ for the PDF to PostScript conversion:
 lpadmin -p printer -o pdftops-renderer-default=acroread
 ```
 
-and the following to remove it:
+and similarily the following can be done to remove it:
 ```
 lpadmin -p printer -R pdftops-renderer-default
 ```
