@@ -19,7 +19,7 @@ Error:
 
 ### Fedora 40 missing dependencies :
 ```
-sudo dnf install ./AdbeRdr9.5.5-1_i486linux_enu.rpm 
+$ sudo dnf install ./AdbeRdr9.5.5-1_i486linux_enu.rpm 
 Error: 
  Problem: conflicting requests
   - nothing provides /bin/basename needed by AdobeReader_enu-9.5.5-1.i486 from @commandline
@@ -44,7 +44,7 @@ and located in `/opt/Adobe/Reader9/Reader/intellinux/lib/`.
   + The missing `libidn.so.11` is extracted from a CentOS 8 **libidn** i686
   RPM (`libidn-1.34-5.el8.i686.rpm`). Although `libidn.so.11` is not
   strictly required to have been included in the new AdobeReader RPM for
-  Fedora and RHEL 8, the new RPM will also be compatible with RHEL 9.
+  Fedora and RHEL 8, the generated RPM will also be compatible with RHEL 9.
   + The missing `libpangox-1.0.so.0` is extracted from a Fedora 31
   **pangox-compat** i686 RPM (`pangox-compat-0.0.2-15.fc31.i686.rpm`).
   **pangox-compat** RPM is used because the main **pango** RPM hasn't provided
