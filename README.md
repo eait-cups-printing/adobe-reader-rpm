@@ -5,8 +5,9 @@ Adobe Reader for Linux is no longer supported by Adobe. Acrobat Reader 9.5.5
 was the last version released back in April, 2013. 
 
 Unfortunately trying to install `AdbeRdr9.5.5-1_i486linux_enu.rpm` on newer
-Fedora or RHEL releases results in unsatisfied dependencies :
+Fedora or RHEL releases results in unsatisfied dependencies.
 
+### RHEL 9 missing dependencies :
 ```
 $ sudo dnf install ./AdbeRdr9.5.5-1_i486linux_enu.rpm
 Error: 
@@ -16,18 +17,34 @@ Error:
   - nothing provides libpangox-1.0.so.0 needed by AdobeReader_enu-9.5.5-1.i486
 ```
 
+### Fedora 40 missing dependencies :
+```
+sudo dnf install ./AdbeRdr9.5.5-1_i486linux_enu.rpm 
+Error: 
+ Problem: conflicting requests
+  - nothing provides /bin/basename needed by AdobeReader_enu-9.5.5-1.i486 from @commandline
+  - nothing provides /bin/cat needed by AdobeReader_enu-9.5.5-1.i486 from @commandline
+  - nothing provides /bin/chmod needed by AdobeReader_enu-9.5.5-1.i486 from @commandline
+  - nothing provides /bin/echo needed by AdobeReader_enu-9.5.5-1.i486 from @commandline
+  - nothing provides /bin/ln needed by AdobeReader_enu-9.5.5-1.i486 from @commandline
+  - nothing provides /bin/rm needed by AdobeReader_enu-9.5.5-1.i486 from @commandline
+  - nothing provides /bin/touch needed by AdobeReader_enu-9.5.5-1.i486 from @commandline
+  - nothing provides libpangox-1.0.so.0 needed by AdobeReader_enu-9.5.5-1.i486 from @commandline
+```
+
 ## Bug fixes and enhancements
 The new AdobeReader binary RPM that is generated from the instructions in
 the following sections has a number of fixes and enhancements compared to
 the original RPM:
-- Missing `/bin/basename` requires dependency has been replaced with
+- Missing `/bin/basename`, `/bin/cat`, `/bin/chmod`, `/bin/echo`, `/bin/ln`,
+`/bin/rm` and `/bin/touch` requires dependencies have been replaced with
 **coreutils**.
 - Missing `libidn.so.11` and `libpangox-1.0.so.0` are bundled in the new RPM
 and located in `/opt/Adobe/Reader9/Reader/intellinux/lib/`.
   + The missing `libidn.so.11` is extracted from a CentOS 8 **libidn** i686
   RPM (`libidn-1.34-5.el8.i686.rpm`). Although `libidn.so.11` is not
   strictly required to have been included in the new AdobeReader RPM for
-  RHEL 8, the new RPM will also be compatible with both RHEL 9 and Fedora.
+  Fedora and RHEL 8, the new RPM will also be compatible with RHEL 9.
   + The missing `libpangox-1.0.so.0` is extracted from a Fedora 31
   **pangox-compat** i686 RPM (`pangox-compat-0.0.2-15.fc31.i686.rpm`).
   **pangox-compat** RPM is used because the main **pango** RPM hasn't provided
