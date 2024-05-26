@@ -36,11 +36,12 @@ Error:
 The new AdobeReader binary RPM that is generated from the instructions in
 the following sections has a number of fixes and enhancements compared to
 the original RPM:
-- Missing `/bin/basename`, `/bin/cat`, `/bin/chmod`, `/bin/echo`, `/bin/ln`,
-`/bin/rm` and `/bin/touch` requires dependencies have been replaced with
+- Unsatisfied `/bin/basename`, `/bin/cat`, `/bin/chmod`, `/bin/echo`, `/bin/ln`,
+`/bin/rm` and `/bin/touch` _Requires_ dependencies have been replaced with
 **coreutils**.
-- Missing `libidn.so.11` and `libpangox-1.0.so.0` are bundled in the new RPM
-and located in `/opt/Adobe/Reader9/Reader/intellinux/lib/`.
+- Unsatisfied `libidn.so.11` and `libpangox-1.0.so.0` _Requires_ dependencies are
+no longer an issue due to the missing library files now being bundled into the
+new RPM and are located in `/opt/Adobe/Reader9/Reader/intellinux/lib/`.
   + The missing `libidn.so.11` is extracted from a CentOS 8 **libidn** i686
   RPM (`libidn-1.34-5.el8.i686.rpm`). Although `libidn.so.11` is not
   strictly required to have been included in the new AdobeReader RPM for
@@ -63,8 +64,9 @@ used to satisfy the dependencies of any other RPM.
 modern web-browser.
 - Use `/usr/share/bash-completion/completions/` directory instead of legacy
 `/etc/bash_completion.d/` for the symlink to the `acroread_tab` file.
-- Renames `_filedir` function to `_acroread_filedir` in the `acroread_tab`
-file to avoid potential name clash issues.
+- Renamed `_filedir` function to `_acroread_filedir` in the `acroread_tab`
+file to avoid potential **bash-completion** name clash issues. e.g.
+[Fedora Bugzilla# 2070852](https://bugzilla.redhat.com/show_bug.cgi?id=2070852)
 - Clear the execstack flag from the `libcrypto.so.0.9.8` and `libsccore.so`
 bundled library files rather than rely on an old execstack exception SElinux
 policy for `acroread`.
@@ -73,7 +75,7 @@ SElinux error report states there is no reason `acroread` should be attempting
 to make its stack executable as it is a potential security issue. The
 suggestion from that bug report is used to clear the execstack flag from the
 bundled library files that have it set.
-- The original RPM in its %post scriptlet uses `xdg-desktop-icon`,
+- The original RPM in its _%post_ scriptlet uses `xdg-desktop-icon`,
 `xdg-desktop-menu`, `xdg-icon-resource` and `xdg-mime`to install the
 following files :
   + `/root/Desktop/AdobeReader.desktop`
@@ -88,9 +90,9 @@ following files :
 does not list any of those files.
 
   Instead, the new RPM creates symlinks that are "owned" by the new RPM using the
-%ghost directive and nothing is installed under either `/root/Desktop/` or
+_%ghost_ directive and nothing is installed under either `/root/Desktop/` or
 `/usr/local/share/applications/` directories.
-- Has option to not include problematic Internet Access Plug-in (EFS.api)
+- Has option to not include problematic Internet Access Plug-in (`EFS.api`)
 in the RPM that is built. See top of
 [AdobeReader.spec](https://github.com/eait-cups-printing/adobe-reader-rpm/blob/main/AdobeReader.spec)
 file for more details.
