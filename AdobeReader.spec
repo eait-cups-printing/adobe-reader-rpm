@@ -1,11 +1,14 @@
 # Turn off missing build-id warnings
-%global _build_id_links none
+%global _build_id_links %{nil}
 
 # Turn off generating debug package
 %global debug_package %{nil}
 
 # Turn off BRP scripts which strip binaries
 %global __os_install_post %{nil}
+
+# Turn off sourcing date epoch from changelog
+%global source_date_epoch_from_changelog %{nil}
 
 # Set delete_efs_plugin to 1 to remove Internet Access Plug-in (EFS.api) from
 # this RPM if :
