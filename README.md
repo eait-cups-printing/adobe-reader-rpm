@@ -1,11 +1,14 @@
 # Re-packaging the Adobe Reader RPM
-**(for newer Fedora and RHEL >=8 releases)**
+**(for newer Fedora and RHEL 8 & 9 releases)**
 
-Adobe Reader for Linux is no longer supported by Adobe. Acrobat Reader 9.5.5
-was the last version released back in April, 2013. 
+**Note:** These Adobe Reader RPM re-packaging instructions are not suitable
+for CentOS Stream 10 and RHEL 10 since they no longer provide 32-bit (i686) RPMs.
 
-Unfortunately trying to install `AdbeRdr9.5.5-1_i486linux_enu.rpm` on newer
-Fedora or RHEL releases results in unsatisfied dependencies.
+Adobe has discontinued support for Adobe Reader for Linux. The final version,
+Acrobat Reader 9.5.5, was released in April 2013.
+
+Unfortunately trying to install the original `AdbeRdr9.5.5-1_i486linux_enu.rpm`
+on newer Fedora or RHEL releases results in unsatisfied dependencies:
 
 ### RHEL 9 missing dependencies :
 ```
@@ -17,11 +20,11 @@ Error:
   - nothing provides libpangox-1.0.so.0 needed by AdobeReader_enu-9.5.5-1.i486
 ```
 
-### Fedora 40 missing dependencies :
+### Fedora 41 missing dependencies :
 ```
 $ sudo dnf install ./AdbeRdr9.5.5-1_i486linux_enu.rpm 
-Error: 
- Problem: conflicting requests
+Failed to resolve the transaction:
+Problem: conflicting requests
   - nothing provides /bin/basename needed by AdobeReader_enu-9.5.5-1.i486 from @commandline
   - nothing provides /bin/cat needed by AdobeReader_enu-9.5.5-1.i486 from @commandline
   - nothing provides /bin/chmod needed by AdobeReader_enu-9.5.5-1.i486 from @commandline
@@ -55,13 +58,14 @@ runtime warnings. (Note: any _Recommends_ dependency which can no longer be
 satisfied on a newer Fedora or RHEL release because the i686 package no
 longer exists is automatically ignored, so unfortunately may have to live
 with some runtime warnings)
-- Filtered automatically generated requires and provides for bundled library
-files so that only requires dependencies for external libraries are kept.
-`/opt/Adobe/Reader9/Reader/intellinux/lib/` where the bundled library
-files are installed is exclusive to the AdobeReader RPM, so should not be
-used to satisfy the dependencies of any other RPM.
-- Removed Netscape NPAPI based PDF plug-in as it is not supported by any
-modern web-browser.
+- Automatically generated _Requires_ and _Provides_ for bundled library files
+are filtered to keep only the dependencies required for external libraries.
+Since the directory `/opt/Adobe/Reader9/Reader/intellinux/lib/`, where the
+bundled library files are located, is exclusive for the AdobeReader RPM, we
+ensure that these bundled library files cannot be used to fulfill the
+dependencies of any other RPM.
+- Removed NPAPI (Netscape Plug-in API) plug-in as it is no longer supported by
+any modern web-browser.
 - Use `/usr/share/bash-completion/completions/` directory instead of legacy
 `/etc/bash_completion.d/` for the symlink to the `acroread_tab` file.
 - Renamed `_filedir` function to `_acroread_filedir` in the `acroread_tab`
@@ -159,7 +163,7 @@ If you encounter a "nothing provides libgdk_pixbuf_xlib-2.0.so.0" error,
 then you will need to enable a PowerTools/CRB "*CodeReady Builder*"
 repository which contains the missing **gdk-pixbuf2-xlib** i686 RPM:
 
-#### CentOS 9 Stream, Alma Linux 9, Rocky Linux 9
+#### CentOS Stream 9, Alma Linux 9, Rocky Linux 9
 ```
 sudo dnf config-manager --set-enabled crb
 ```
@@ -169,7 +173,7 @@ sudo dnf config-manager --set-enabled crb
 sudo dnf config-manager --enable codeready-builder-for-rhel-9-x86_64-rpms
 ```
 
-#### CentOS 8 Stream, Alma Linux 8, Rocky Linux 8
+#### CentOS Stream 8, Alma Linux 8, Rocky Linux 8
 ```
 sudo dnf config-manager --set-enabled powertools
 ```
